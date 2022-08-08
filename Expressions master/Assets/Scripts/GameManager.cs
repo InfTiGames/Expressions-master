@@ -4,7 +4,14 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject gameOverPanel;
-    public bool IsGameActive = false;   
+    public bool IsGameActive = false;
+
+    public static GameManager SingletonInstance { get; private set; }
+
+    private void Awake()
+    {
+        SingletonInstance = this;
+    }
 
     public void ActivateGame()
     {

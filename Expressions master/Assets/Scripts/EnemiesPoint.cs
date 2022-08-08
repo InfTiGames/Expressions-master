@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -13,8 +11,8 @@ public class EnemiesPoint : MonoBehaviour
     void Start()
     {
         _countUnitsTxt = GetComponentInChildren<TextMeshProUGUI>();
-        _gameManager = FindObjectOfType<GameManager>();
-        _spawnManager = FindObjectOfType<SpawnManager>();
+        _gameManager = GameManager.SingletonInstance;
+        _spawnManager = SpawnManager.SingletonInstance;
         CountEnemyUnits = _spawnManager._numberOfEnemies;        
     }
 
@@ -23,13 +21,9 @@ public class EnemiesPoint : MonoBehaviour
         if (_gameManager.IsGameActive)
         {   
             if (CountEnemyUnits > 0)
-            {
-                _countUnitsTxt.gameObject.SetActive(true);
-            }
+                _countUnitsTxt.gameObject.SetActive(true); 
             else
-            {
-                _countUnitsTxt.gameObject.SetActive(false);
-            }
+                _countUnitsTxt.gameObject.SetActive(false);        
 
             _countUnitsTxt.text = CountEnemyUnits.ToString();
 
@@ -37,8 +31,6 @@ public class EnemiesPoint : MonoBehaviour
             _countUnitsTxt.transform.position = position;          
         }
         else
-        {
             _countUnitsTxt.gameObject.SetActive(false);
-        }
     }
 }

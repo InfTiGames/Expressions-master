@@ -7,31 +7,46 @@ public class UnitsControl : MonoBehaviour
     [SerializeField] GameObject _unitDeathFxPrefab;
     [SerializeField] GameObject _enemyUnitDeathFxPrefab;
 
+    public static UnitsControl SingletonInstance { get; private set; }
+
+    void Awake()
+    {
+        SingletonInstance = this;
+    }
+
     bool _inFight;
+
+    Animator _animator;
+    int _isRunningHash;
+    int _isAttackingHash;
 
     [SerializeField] LayerMask _enemies;
 
     NavMeshAgent _navMeshAgent;
     UnitsPointController _parent;
+
     SpawnManager _spawnManager;
+
     GameManager _gameManager;  
    
-    float _detectionDistance = 10f;   
+    float _detectionDistance = 10f;
+    float _attackDistance = 3f;
     float _rotationSpeed;
       
     Transform _agentTransform; 
     GameObject _curTarget;   
 
     void Start()
-    {        
-        _spawnManager = FindObjectOfType<SpawnManager>();
-        _gameManager = FindObjectOfType<GameManager>();
-        _parent = GetComponentInParent<UnitsPointController>();          
-        
-        _curTarget = _spawnManager.Enemies[0];      
+    {
+        _spawnManager = SpawnManager.SingletonInstance;
+        _gameManager = GameManager.SingletonInstance;
+        _parent = GetComponentInParent<UnitsPointController>();              
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _rotationSpeed = _navMeshAgent.angularSpeed;
         _agentTransform = _navMeshAgent.transform;
+        _animator = GetComponent<Animator>();
+        _isRunningHash = Animator.StringToHash("Run");
+        _isAttackingHash = Animator.StringToHash("Attack");
     }
 
     void Update()
@@ -43,14 +58,21 @@ public class UnitsControl : MonoBehaviour
             {
                 _parent.InFight = true;
                 MoveToTarget();
-                RotateToTarget();  
+                RotateToTarget();
+                if (Vector3.Distance(SortTarget().transform.position, transform.position) <= _attackDistance)
+                {
+                    _animator.SetBool(_isRunningHash, false);
+                    _animator.SetBool(_isAttackingHash, true);
+                }
             }
             else
             {
+                _parent.InFight = false;
                 RotateForward();
                 MoveToParent();
-                _parent.InFight = false; 
-            }           
+                _animator.SetBool(_isRunningHash, true);
+                _animator.SetBool(_isAttackingHash, false);
+            }
         }
     }
 
@@ -88,7 +110,10 @@ public class UnitsControl : MonoBehaviour
 
     void RotateForward()
     {
-        _agentTransform.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.LookRotation(Vector3.forward, Vector3.up), 1f * Time.deltaTime);
+        Vector3 lookDirection = Vector3.forward;
+        lookDirection.y = 0;
+        if (lookDirection == Vector3.zero) return;
+        _agentTransform.rotation = Quaternion.RotateTowards(_agentTransform.rotation, Quaternion.LookRotation(lookDirection, Vector3.up), _rotationSpeed * Time.deltaTime);
     }
 
     void MoveToTarget()
@@ -104,23 +129,23 @@ public class UnitsControl : MonoBehaviour
         _navMeshAgent.SetDestination(_parent.transform.position);
     }
 
+    void DestroyGm(Vector3 _pos, GameObject gm, GameObject _prefab)
+    {
+        _pos = new Vector3(gm.transform.position.x, 1f, gm.transform.position.z);
+        GameObject _fx = Instantiate(_prefab, _pos, Quaternion.identity);
+        Destroy(_fx, 1.5f);
+        Destroy(gm);
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.TryGetComponent(out EnemiesControl enemy))
         {
             _spawnManager.Enemies.Remove(collision.gameObject);
-            Vector3 _fxPositionEnemy = new Vector3(collision.gameObject.transform.position.x, 1, collision.gameObject.transform.position.z);
-            GameObject enemPrefabFx = Instantiate(_enemyUnitDeathFxPrefab, _fxPositionEnemy, Quaternion.identity);
-            Destroy(enemPrefabFx, 1.5f);
-            Destroy(collision.gameObject);
-
+            DestroyGm(collision.gameObject.transform.position, collision.gameObject, _enemyUnitDeathFxPrefab);
             collision.gameObject.GetComponentInParent<EnemiesPoint>().CountEnemyUnits--;
-            
             _parent.Units.Remove(gameObject);
-            Vector3 _fxPosition = new Vector3(transform.position.x, 1, transform.position.z);
-            GameObject unitPrefabFx = Instantiate(_unitDeathFxPrefab, _fxPosition, Quaternion.identity);
-            Destroy(unitPrefabFx, 1.5f);
-            Destroy(gameObject);
+            DestroyGm(transform.position, gameObject, _unitDeathFxPrefab);
         }
     }
 }

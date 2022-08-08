@@ -696,8 +696,8 @@ Camera:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.31679422, g: 0.4247285, b: 0.5943396, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -718,7 +718,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2147483647
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -972,11 +972,10 @@ MonoBehaviour:
     type: 3}
   _groundTile: {fileID: 8979347876057578546, guid: 4a97310b96aff444e8436e81bffcb119,
     type: 3}
-  _enemyPrefab: {fileID: 8136772489863725265, guid: a89cf6e4ae2277f4088b1f5858b1e1a1,
+  _enemyPrefab: {fileID: 39688946543605493, guid: a89cf6e4ae2277f4088b1f5858b1e1a1,
     type: 3}
   _navMeshBaker: {fileID: 931344187}
   _numberOfEnemies: 20
-  Points: []
   Enemies: []
 --- !u!4 &1347445893
 Transform:
@@ -1588,7 +1587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameManager: {fileID: 1523442548}
-  _unitPrefab: {fileID: 1195286789592697343, guid: 022a89bd85ea9e64b888959854f9b170,
+  _unitPrefab: {fileID: 7253416711442556557, guid: 022a89bd85ea9e64b888959854f9b170,
     type: 3}
   InFight: 0
   Units: []

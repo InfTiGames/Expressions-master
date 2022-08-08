@@ -14,34 +14,33 @@ public class SpawnManager : MonoBehaviour
     GameObject _enemiesParent;
     [SerializeField] NavigationBaker _navMeshBaker;
 
+    public static SpawnManager SingletonInstance { get; private set; }
+
     float _zSpawn = 0f;    
     float _tileLength = 50f;
     float _zSpawnOfPoints = 0f;
 
-    public int _numberOfEnemies = 20;
+    public int _numberOfEnemies;
     int _numberOfPoints = 2;
     int _numberOfTiels = 3;   
 
     List<GameObject> Tiles = new List<GameObject>();
-    public List<GameObject> Points = new List<GameObject>();
-    public List<GameObject> Enemies = new List<GameObject>();   
+    List<GameObject> Points = new List<GameObject>();
+    [HideInInspector] public List<GameObject> Enemies = new List<GameObject>();
 
     void Awake()
-    {
-        _gameManager = FindObjectOfType<GameManager>();
-        _player = FindObjectOfType<UnitsPointController>();
-        _tilesParent = gameObject.transform;
-        _navMeshBaker = FindObjectOfType<NavigationBaker>();
-
+    {   
+        _tilesParent = gameObject.transform;   
+        SingletonInstance = this;
         for (int i = 0; i < _numberOfTiels; i++)
-        {            
-            SpawnTile();  
-        }
+            SpawnTile();          
         _navMeshBaker.RebakeNavMesh();
     }
 
     void Start()
     {
+        _gameManager = GameManager.SingletonInstance;
+        _player = UnitsPointController.SingletonInstance;
         for (int i = 0; i < _numberOfPoints; i++)
         {
             SpawnPoint();
@@ -66,7 +65,7 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnTile()
     {
-        Vector3 tilePosition = new Vector3(0, 0.1f, _zSpawn);
+        Vector3 tilePosition = new Vector3(0, 0, _zSpawn);
         GameObject ground = Instantiate(_groundTile, tilePosition, transform.rotation, _tilesParent);
         Tiles.Add(ground);
         _zSpawn += _tileLength;        

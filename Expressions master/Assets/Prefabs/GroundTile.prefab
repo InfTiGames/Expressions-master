@@ -250,7 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _leftExpression: {fileID: 2522833815443035109}
   _rightExpression: {fileID: 1005601193}
-  _unitPrefab: {fileID: 1195286789592697343, guid: 022a89bd85ea9e64b888959854f9b170,
+  _unitPrefab: {fileID: 7253416711442556557, guid: 022a89bd85ea9e64b888959854f9b170,
     type: 3}
 --- !u!54 &663227004
 Rigidbody:
@@ -646,7 +646,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _leftExpression: {fileID: 2522833815443035109}
   _rightExpression: {fileID: 1005601193}
-  _unitPrefab: {fileID: 1195286789592697343, guid: 022a89bd85ea9e64b888959854f9b170,
+  _unitPrefab: {fileID: 7253416711442556557, guid: 022a89bd85ea9e64b888959854f9b170,
     type: 3}
 --- !u!54 &16766124
 Rigidbody:

@@ -8,11 +8,19 @@ public class UnitsPointController : MonoBehaviour
     TextMeshProUGUI _countUnitsTxt;
     Camera _mainCamera;
     [SerializeField] GameObject _unitPrefab;
+    const float _speedX = 3f;
+
+    public static UnitsPointController SingletonInstance { get; private set; }
 
     public bool InFight = false;
-    public List<GameObject> Units = new List<GameObject>();
+    [HideInInspector] public List<GameObject> Units = new();
 
-    float _speed = 8f;         
+    const float _speed = 8f;
+
+    private void Awake()
+    {
+        SingletonInstance = this;
+    }
 
     void Start()
     {
@@ -34,8 +42,7 @@ public class UnitsPointController : MonoBehaviour
             _gameManager.IsGameActive = false;
             Cursor.visible = true;
             _gameManager.GameOver();
-        }
-        
+        }        
         if (_gameManager.IsGameActive)
         {
             _countUnitsTxt.text = Units.Count.ToString();
@@ -58,7 +65,7 @@ public class UnitsPointController : MonoBehaviour
         if (Physics.Raycast(rayFromCamera, out RaycastHit hit))
         {
             Vector3 hitPointWithCharY = new Vector3(hit.point.x, transform.position.y, transform.position.z);
-            transform.position = Vector3.Lerp(transform.position, hitPointWithCharY, 6f * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, hitPointWithCharY, _speedX * Time.deltaTime);
         }
     }
 }

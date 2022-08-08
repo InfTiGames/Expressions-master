@@ -19,51 +19,39 @@ public class Expressions : MonoBehaviour
 
     void Awake()
     {        
-        _player = FindObjectOfType<UnitsPointController>();
         _expressionText = GetComponentInChildren<TextMeshProUGUI>();       
     }
 
     void Start()
-    {        
+    {
+        _player = UnitsPointController.SingletonInstance;
         _expressionsValue = Random.Range(1, 10);
         _expressionType = (Expression)Random.Range(1, 4);
-
-        if (_expressionsValue > 4 && _expressionType == Expression.Multiply || _expressionsValue > 4 && _expressionType == Expression.Divide)
-        {
-            _expressionType = (Expression)Random.Range(4, 3);
-        } 
-
+        if (_expressionsValue > 3 && _expressionType == Expression.Multiply || _expressionsValue > 3 && _expressionType == Expression.Divide) _expressionType = (Expression)Random.Range(4, 3);
+        if (gameObject == _leftExpression) if (_expressionType == Expression.Minus) _expressionType = Expression.Sum;
         ExpressionText(_expressionText);
     }
 
     void ExpressionText(TextMeshProUGUI _expressionText)
     {
         if (_expressionType == Expression.Sum)
-        {
-            _expressionText.text = "x+" + _expressionsValue;         
-        }
+            _expressionText.text = "x+" + _expressionsValue;   
         
-        if (_expressionType == Expression.Minus)
-        {
-            _expressionText.text = "x-" + _expressionsValue;   
-        }
+        if (_expressionType == Expression.Minus)        
+            _expressionText.text = "x-" + _expressionsValue; 
         
-        if(_expressionType == Expression.Multiply)
-        {
-            _expressionText.text = "x*" + _expressionsValue;
-        }
+        if(_expressionType == Expression.Multiply)        
+            _expressionText.text = "x*" + _expressionsValue;        
         
-        if (_expressionType == Expression.Divide)
-        {
-            _expressionText.text = "x/" + _expressionsValue;
-        } 
+        if (_expressionType == Expression.Divide)    
+            _expressionText.text = "x/" + _expressionsValue;        
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.TryGetComponent(out UnitsPointController point))
         {
-            if (this.gameObject == _leftExpression)
+            if (gameObject == _leftExpression)
             {
                 _rightExpression.SetActive(false);
             }
@@ -75,7 +63,7 @@ public class Expressions : MonoBehaviour
 
             switch (_expressionType)
             {
-                case Expression.Sum:
+                case Expression.Sum: 
                     for (int i = 0; i < _expressionsValue; i++)
                     {
                         float angle = i * Mathf.PI * 2f / _expressionsValue;
@@ -84,7 +72,7 @@ public class Expressions : MonoBehaviour
                         _player.AddUnitsToList(gm);
                     }
                     break;
-                case Expression.Minus:
+                case Expression.Minus: 
                     for (int i = 0; i < _expressionsValue; i++)
                     {
                         if (_player.Units.Count > 0)
@@ -92,7 +80,7 @@ public class Expressions : MonoBehaviour
                             Destroy(_player.Units[0].gameObject);
                             _player.Units.Remove(_player.Units[0].gameObject);
                         }                    
-                    }
+                    } 
                     break;
                 case Expression.Multiply:
                     int g = (_player.Units.Count * _expressionsValue) - _player.Units.Count;
@@ -100,12 +88,11 @@ public class Expressions : MonoBehaviour
                     {
                         float angle = i * Mathf.PI * 2f / g;
                         Vector3 newPos = new Vector3(Mathf.Cos(angle) * 1f, -0.1f, Mathf.Sin(angle) * 1f);
-
                         GameObject units = Instantiate(_unitPrefab, transform.position + newPos, Quaternion.identity, _player.transform);
                         _player.AddUnitsToList(units);
-                    }
+                    } 
                     break;
-                case Expression.Divide:
+                case Expression.Divide: 
                     int y = _player.Units.Count / _expressionsValue;
                     int z = _player.Units.Count - y;
                     for (int i = 0; i < z; i++)
@@ -115,7 +102,7 @@ public class Expressions : MonoBehaviour
                             Destroy(_player.Units[0].gameObject);
                             _player.Units.Remove(_player.Units[0].gameObject);
                         }
-                    }
+                    } 
                     break;
             }            
         }
